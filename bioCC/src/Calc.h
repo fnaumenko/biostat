@@ -2,7 +2,7 @@
 Calc.h
 Provides classes for calculating CC
 2014 Fedor Naumenko (fedor.naumenko@gmail.com)
-Last modified: 07/28/2024
+Last modified: 010/26/24
 ***********************************************************/
 #pragma once
 
@@ -174,8 +174,11 @@ public:
 	Cover(const char* fName, ChromSizes& cSizes, eOInfo oinfo, bool abortInval);
 
 	// Adds cover's item
-	bool operator()()
-	{ AddPos(ValPos(_file->ItemStart(), _file->ItemValue()), _file->PrevItemEnd()); return true; }
+	bool operator()(bool)
+	{
+		AddPos(ValPos(_file->ItemStart(), _file->ItemValue()), _file->PrevItemEnd());
+		return true;
+	}
 
 	// Closes current chrom, open next one
 	//	@param cID: current chrom ID
@@ -216,7 +219,7 @@ public:
 	ReadDens(const char* fName, ChromSizes& cSizes, eOInfo oinfo, bool abortInval);
 
 	// Adds Read
-	bool operator()() {
+	bool operator()(bool) {
 		(*_freq)[_file->ItemStrand() ? _file->ItemStart() : _file->ItemEnd()]++;
 		return true;
 	}
