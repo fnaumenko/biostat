@@ -2,7 +2,7 @@
 vAlign.h
 Provides option emum and main functionality
 2014 Fedor Naumenko (fedor.naumenko@gmail.com)
-Last modified: 07/28/2024
+Last modified: 10/26/24
 ***********************************************************/
 #pragma once
 
@@ -134,7 +134,7 @@ public:
 	}
 
 	// Treats current read
-	bool operator()();
+	bool operator()(bool);
 
 	// Closes current chrom, open next one
 	//	@param cID: current chrom ID

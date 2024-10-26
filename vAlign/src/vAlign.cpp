@@ -5,7 +5,7 @@ It compares the original and actual coordinates of each read
 and prints statistics of right and wrong mappings.
 
 2017 Fedor Naumenko (fedor.naumenko@gmail.com)
-Last modified: 07/28/2024
+Last modified: 10/26/24
 ************************************************************************************/
 
 #include "ChromData.h"
@@ -201,7 +201,7 @@ readlen vAlign::VerifyRead(const ChromSeq& seq, const Read& r)
 }
 
 // Treats current read
-bool vAlign::operator()()
+bool vAlign::operator()(bool)
 {
 	Read r(*_file);
 	if (r.Score < _minScore)	_chrStat.IncrLowScoreCnt();
