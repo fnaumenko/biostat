@@ -2,7 +2,7 @@
 callDist.h (c) 2021 Fedor Naumenko (fedor.naumenko@gmail.com)
 All rights reserved.
 -------------------------
-Last modified: 07/28/2024
+Last modified: 10/26/24
 -------------------------
 Provides main functionality
 ***********************************************************/
@@ -76,10 +76,11 @@ public:
 		vector<UniBedReader::Issue> issues = { "duplicates" };
 		RBedReader file(
 			fname,
-			nullptr,
-			0,					// no internal duplicates control; it performs in _fIdent
+			nullptr,	// chrom sizes
+			0,			// no internal duplicates control; it performs in _fIdent
 			eOInfo::NM,
-			false, true, true
+			true,		// abort invalid
+			true		// first line will be pre-read
 		);
 
 		// pre-read first item to check for PE sequence
@@ -101,7 +102,7 @@ public:
 	}
 
 	// treats current read
-	bool operator()()
+	bool operator()(bool)
 	{
 		Region frag;
 		const Read read(File());
@@ -131,15 +132,14 @@ public:
 			fname,
 			nullptr,
 			Options::GetRDuplPermit(oDUPL),
-			prStats ? eOInfo::STAT : eOInfo::STD,
-			false
+			prStats ? eOInfo::STAT : eOInfo::STD
 		);
 
 		Pass(this, file);
 	}
 
 	// treats current read
-	inline bool operator()() { AddLen(File().ItemRegion().Length()); return true; }
+	inline bool operator()(bool) { AddLen(File().ItemRegion().Length()); return true; }
 
 	// Closes current chrom, open next one
 	inline void operator()(chrid, chrlen, size_t, chrid) {}
