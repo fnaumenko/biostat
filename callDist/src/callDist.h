@@ -2,7 +2,7 @@
 callDist.h (c) 2021 Fedor Naumenko (fedor.naumenko@gmail.com)
 All rights reserved.
 -------------------------
-Last modified: 10/26/24
+Last modified: 12/05/24
 -------------------------
 Provides main functionality
 ***********************************************************/
@@ -40,17 +40,17 @@ class LenDist
 protected:
 	// pass through file records
 	template<typename T>
-	void Pass(T* obj, RBedReader& file) {
+	void Pass(T* obj, RBedReader& file, bool prLF = true) {
 		_file = &file;
-		file.Pass(*obj);
+		file.Pass(*obj, prLF);
 		_file = nullptr;
 	}
 
 	// Gets the file being read
-	inline const RBedReader& File() { return *_file; }
+	const RBedReader& File() { return *_file; }
 
 	// Adds frag length to the frequency distribution
-	inline void AddLen(fraglen len) { _freq.AddVal(len); }
+	void AddLen(fraglen len) { _freq.AddVal(len); }
 
 public:
 	// Print actual frequency distribution on a new line
@@ -73,12 +73,12 @@ class FragDist : public LenDist
 public:
 	FragDist(const char* fname, bool prStats) : _fIdent(_duplAccept = Options::GetBVal(oDUPL))
 	{
-		vector<UniBedReader::Issue> issues = { "duplicates" };
+		vector<UniBedReader::Issue> issues = { "duplicates","unacceptably short"};
 		RBedReader file(
 			fname,
 			nullptr,	// chrom sizes
-			0,			// no internal duplicates control; it performs in _fIdent
-			eOInfo::NM,
+			0,			// no read duplicates control; fragment duplicates is controlled by _fIdent
+			eOInfo::STD,
 			true,		// abort invalid
 			true		// first line will be pre-read
 		);
@@ -89,16 +89,18 @@ public:
 			Err("only paired-end reads are acceptable to call fragments distribution",
 				file.CondFileName()).Throw();
 
-		Pass(this, file);
+		Pass(this, file, false);
 
 		// print statistic
 		size_t cnt = _fIdent.Count();
-		issues[0].Cnt = _fIdent.DuplCount();
-		UniBedReader::PrintItemCount(cnt, "fragments");
-		if (issues[0].Cnt) {
+		dout << SepSCl << cnt << " identified fragments";
+		if (prStats) {
+			issues[0].Cnt = _fIdent.DuplCount();
+			issues[1].Cnt = _fIdent.ShortCount();
 			if (_duplAccept)	issues[0].Action = UniBedReader::eAction::ACCEPT;
-			UniBedReader::PrintStats(cnt, issues[0].Cnt, issues, prStats);
+			file.PrintStats(cnt, issues);
 		}
+		dout << LF;
 	}
 
 	// treats current read
@@ -107,7 +109,8 @@ public:
 		Region frag;
 		const Read read(File());
 
-		if (_fIdent(read, frag))	AddLen(frag.Length());
+		if (_fIdent(read, frag))
+			AddLen(frag.Length());
 		return true;
 	}
 
@@ -139,13 +142,13 @@ public:
 	}
 
 	// treats current read
-	inline bool operator()(bool) { AddLen(File().ItemRegion().Length()); return true; }
+	bool operator()(bool) { AddLen(File().ItemRegion().Length()); return true; }
 
 	// Closes current chrom, open next one
-	inline void operator()(chrid, chrlen, size_t, chrid) {}
+	void operator()(chrid, chrlen, size_t, chrid) {}
 
 	// Closes last chrom
-	inline void operator()(chrid, chrlen, size_t, size_t) {}
+	void operator()(chrid, chrlen, size_t, size_t) {}
 };
 
 // 'FqReadDist' represents 'row' (fastq) Read's length frequency statistics ('Read distribution')
