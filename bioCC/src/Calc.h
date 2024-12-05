@@ -2,7 +2,7 @@
 Calc.h
 Provides classes for calculating CC
 2014 Fedor Naumenko (fedor.naumenko@gmail.com)
-Last modified: 010/26/24
+Last modified: 12/05/2024
 ***********************************************************/
 #pragma once
 
@@ -321,8 +321,6 @@ class CorrPair
 	void CheckItemsCount(T* obj, const char* fName)	{
 		if (!obj->ItemsCount()) 
 			PrintMngr::CompleteEmpty(fName, _type);
-		else if (PrintMngr::IsPrNameOnly())
-			dout << LF;
 	}
 
 	// Creates features bed object.
