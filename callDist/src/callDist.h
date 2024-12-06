@@ -2,7 +2,7 @@
 callDist.h (c) 2021 Fedor Naumenko (fedor.naumenko@gmail.com)
 All rights reserved.
 -------------------------
-Last modified: 12/05/24
+Last modified: 12/06/24
 -------------------------
 Provides main functionality
 ***********************************************************/
@@ -93,7 +93,8 @@ public:
 
 		// print statistic
 		size_t cnt = _fIdent.Count();
-		dout << SepSCl << cnt << " identified fragments";
+		dout << SepSCl << cnt << sPercent(cnt, file.ReadedItemCount()/2, 2, 0, true) << " identified fragments";
+
 		if (prStats) {
 			issues[0].Cnt = _fIdent.DuplCount();
 			issues[1].Cnt = _fIdent.ShortCount();
