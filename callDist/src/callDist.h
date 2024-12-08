@@ -2,7 +2,7 @@
 callDist.h (c) 2021 Fedor Naumenko (fedor.naumenko@gmail.com)
 All rights reserved.
 -------------------------
-Last modified: 12/06/24
+Last modified: 12/08/24
 -------------------------
 Provides main functionality
 ***********************************************************/
@@ -73,7 +73,6 @@ class FragDist : public LenDist
 public:
 	FragDist(const char* fname, bool prStats) : _fIdent(_duplAccept = Options::GetBVal(oDUPL))
 	{
-		vector<UniBedReader::Issue> issues = { "duplicates","unacceptably short"};
 		RBedReader file(
 			fname,
 			nullptr,	// chrom sizes
@@ -96,9 +95,11 @@ public:
 		dout << SepSCl << cnt << sPercent(cnt, file.ReadedItemCount()/2, 2, 0, true) << " identified fragments";
 
 		if (prStats) {
-			issues[0].Cnt = _fIdent.DuplCount();
-			issues[1].Cnt = _fIdent.ShortCount();
-			if (_duplAccept)	issues[0].Action = UniBedReader::eAction::ACCEPT;
+			vector<UniBedReader::Issue> issues = { "unacceptably short","duplicates" };
+
+			issues[0].Cnt = _fIdent.ShortCount();
+			issues[1].Cnt = _fIdent.DuplCount();
+			if (_duplAccept)	issues[1].Action = UniBedReader::eAction::ACCEPT;
 			file.PrintStats(cnt, issues);
 		}
 		dout << LF;
@@ -110,7 +111,7 @@ public:
 		Region frag;
 		const Read read(File());
 
-		if (_fIdent(read, frag))
+		if (_fIdent(read, File().ReadLength(), frag))
 			AddLen(frag.Length());
 		return true;
 	}
