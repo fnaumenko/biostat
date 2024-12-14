@@ -12,7 +12,6 @@ Last modified: 12/05/2024
 #include "Features.h"
 
 
-typedef pair<double, double> pairDbl;
 typedef pair<Regions::Iter, Regions::Iter> RegionsRange;
 
 // 'eRS' defines types of printed template regions (features) CC
