@@ -2,7 +2,7 @@
 callDist.h (c) 2021 Fedor Naumenko (fedor.naumenko@gmail.com)
 All rights reserved.
 -------------------------
-Last modified: 12/08/24
+Last modified: 01/09/25
 -------------------------
 Provides main functionality
 ***********************************************************/
@@ -50,7 +50,7 @@ protected:
 	const RBedReader& File() { return *_file; }
 
 	// Adds frag length to the frequency distribution
-	void AddLen(fraglen len) { _freq.AddVal(len); }
+	void AddLen(fraglen len) { _freq.IncrFreq(len); }
 
 public:
 	// Print actual frequency distribution on a new line
