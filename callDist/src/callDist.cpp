@@ -59,9 +59,9 @@ const BYTE Options::UsageCount = ArrCnt(Options::Usages);
 dostream dout;	// stream's duplicator
 
 // Returns explicitly defined by user combo type, otherwise default combo type
-Distrib::eCType GetType(Distrib::eCType defType)
+Distrib::eDType GetType(Distrib::eDType defType)
 {
-	return Options::Assigned(oDTYPE) ? Distrib::eCType(Options::GetIVal(oDTYPE)) : defType;
+	return Options::Assigned(oDTYPE) ? Distrib::eDType(Options::GetIVal(oDTYPE)) : defType;
 }
 
 /*****************************************/
@@ -103,7 +103,11 @@ int main(int argc, char* argv[])
 			break;
 		case FT::eType::DIST:
 			dout << iName;
-			Distrib(iName, dout).Print(dout, Distrib::eCType(Options::GetIVal(oDTYPE)), true, false);
+			{
+				Distrib d(iName, dout);
+				d.CalcADParams(Distrib::eDType(Options::GetIVal(oDTYPE)));
+				d.Print(dout, true, false);
+			}
 			break;
 		default:
 			Err(sWFormat + SepSCl + sRExt + " or FQ", iName).Throw();

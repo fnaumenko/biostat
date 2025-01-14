@@ -54,13 +54,15 @@ protected:
 
 public:
 	// Print actual frequency distribution on a new line
-	//	@param ctype: combined type of distribution
+	//	@param dtype: combined type of distribution
 	//	@param prDistr: if true then print distribution additionally
-	void Print(Distrib::eCType ctype, bool prDistr)
+	void Print(Distrib::eDType dtype, bool prDistr)
 	{
 		// empty input is checked already in the 'UniBedReader' constructor
-		if (_freq.Size())
-			_freq.Print(dout, ctype, true, prDistr);
+		if (_freq.Size()) {
+			_freq.CalcADParams(dtype);
+			_freq.Print(dout, true, prDistr);
+		}
 	}
 };
 
